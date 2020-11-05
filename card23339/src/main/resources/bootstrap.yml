@@ -1,0 +1,19 @@
+server:
+  port: 23339
+
+spring:
+  application:
+    name: card
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        file-extension: yml
+        prefix: commonWithDB
+  profiles:
+    active: dev
+
+mybatis:
+  # spring boot集成mybatis的方式打印sql
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

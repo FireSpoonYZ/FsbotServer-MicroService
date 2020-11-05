@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.firespoon.fsbotserver.mapper.StandMapper">
+    <sql id = "tableName">
+        stand
+    </sql>
+    <sql id="column">
+        english_name, name, owner, ability, power, speed, range, lasting, precision,
+    growth
+    </sql>
+    <sql id="columnValue">
+        #{englishName},
+        #{name},
+        #{owner},
+        #{ability},
+        #{power},
+        #{speed},
+        #{range},
+        #{lasting},
+        #{precision},
+        #{growth}
+    </sql>
+    <sql id="itemColumnValue">
+        #{item.englishName},
+        #{item.name},
+        #{item.owner},
+        #{item.ability},
+        #{item.power},
+        #{item.speed},
+        #{item.range},
+        #{item.lasting},
+        #{item.precision},
+        #{item.growth}
+    </sql>
+
+    <sql id="columnIf">
+        <trim prefixOverrides="AND">
+            <if test="id != null">
+                id = #{id}
+            </if>
+            <if test="englishName != null">
+                AND english_name = #{englishName}
+            </if>
+            <if test="name != null">
+                AND name = #{name}
+            </if>
+            <if test="owner != null">
+                AND owner = #{owner}
+            </if>
+            <if test="ability != null">
+                AND ability = #{ability}
+            </if>
+            <if test="power != null">
+                AND power = #{power}
+            </if>
+            <if test="speed != null">
+                AND speed = #{speed}
+            </if>
+            <if test="range != null">
+                AND range = #{range}
+            </if>
+            <if test="lasting != null">
+                AND lasting = #{lasting}
+            </if>
+            <if test="precision != null">
+                AND precision = #{precision}
+            </if>
+            <if test="growth != null">
+                AND growth = #{growth}
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="itemColumnIf">
+        <trim prefixOverrides="AND">
+            <if test="item.id != null">
+                id = #{item.id}
+            </if>
+            <if test="item.englishName != null">
+                AND english_name = #{item.englishName}
+            </if>
+            <if test="item.name != null">
+                AND name = #{item.name}
+            </if>
+            <if test="item.owner != null">
+                AND owner = #{item.owner}
+            </if>
+            <if test="item.ability != null">
+                AND ability = #{item.ability}
+            </if>
+            <if test="item.power != null">
+                AND power = #{item.power}
+            </if>
+            <if test="item.speed != null">
+                AND speed = #{item.speed}
+            </if>
+            <if test="item.range != null">
+                AND range = #{item.range}
+            </if>
+            <if test="item.lasting != null">
+                AND lasting = #{item.lasting}
+            </if>
+            <if test="item.precision != null">
+                AND precision = #{item.precision}
+            </if>
+            <if test="item.growth != null">
+                AND growth = #{item.growth}
+            </if>
+        </trim>
+    </sql>
+
+    <insert id="insert" parameterType="Stand">
+        INSERT INTO <include refid="tableName"/>
+        (<include refid="column"/>)
+        VALUES
+        (<include refid="columnValue"/>)
+    </insert>
+
+    <insert id="insertAll" parameterType="list">
+        INSERT INTO <include refid="tableName"/>
+        (<include refid="column"/>)
+        VALUES
+        <foreach collection="list" item="item"
+                 separator=",">
+            (<include refid="itemColumnValue"/>)
+        </foreach>
+    </insert>
+
+    <delete id="delete" parameterType="Stand">
+        DELETE FROM <include refid="tableName"/>
+        <where>
+            <include refid="columnIf"/>
+        </where>
+    </delete>
+
+    <delete id="deleteAll" parameterType="list">
+        DELETE FROM <include refid="tableName"/>
+        <where>
+            <foreach collection="list" item="item" separator="or">
+                <trim prefix="(" suffix=")">
+                    <include refid="itemColumnIf"/>
+                </trim>
+            </foreach>
+        </where>
+    </delete>
+
+    <insert id="update" parameterType="list">
+        REPLACE INTO <include refid="tableName"/>
+        (id,
+        <include refid="column"/>
+        )
+        VALUES (#{id},<include refid="columnValue"/>)
+    </insert>
+
+    <insert id="updateAll" parameterType="list">
+        REPLACE INTO <include refid="tableName"/>
+        (id,<include refid="column"/>)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id},<include refid="itemColumnValue"/>)
+        </foreach>
+    </insert>
+
+    <select id="select" parameterType="Stand"
+            resultType="Stand">
+        SELECT * FROM <include refid="tableName"/>
+        <where>
+            <include refid="columnIf"/>
+        </where>
+    </select>
+
+    <select id="selectAll" parameterType="list" resultType="Stand">
+        SELECT * FROM <include refid="tableName"/>
+        <where>
+            <foreach collection="list" item="item" separator="or">
+                <trim prefix="(" suffix=")">
+                    <include refid="itemColumnIf"/>
+                </trim>
+            </foreach>
+        </where>
+    </select>
+
+    <select id="random" parameterType="integer" resultType="Stand">
+        SELECT * FROM <include refid="tableName"/>
+        ORDER BY RANDOM()
+        LIMIT #{time}
+    </select>
+</mapper>

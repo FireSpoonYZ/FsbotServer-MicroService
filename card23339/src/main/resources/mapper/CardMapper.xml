@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.firespoon.fsbotserver.mapper.CardMapper">
+    <resultMap id="cardResultMap" type="Card">
+        <result property="ownerId" column="owner_id"/>
+        <result property="name" column="name"/>
+        <result property="properties" column="properties_json"
+                jdbcType="LONGVARCHAR" javaType="Map"
+                typeHandler="org.firespoon.fsbotserver.handler.CardPropertiesJsonTypeHandler"/>
+    </resultMap>
+    
+    <sql id="tableName">
+        card
+    </sql>
+
+    <sql id="column">
+        owner_id, name, properties_json
+    </sql>
+
+    <sql id="columnValue">
+        #{ownerId},
+        #{name},
+        #{properties, typeHandler = org.firespoon.fsbotserver.handler.CardPropertiesJsonTypeHandler}
+    </sql>
+
+    <sql id="itemColumnValue">
+        #{item.ownerId},
+        #{item.name},
+        #{item.properties, typeHandler = org.firespoon.fsbotserver.handler.CardPropertiesJsonTypeHandler}
+    </sql>
+
+    <sql id="columnIf">
+        <trim prefixOverrides="AND">
+            <if test="ownerId != null">
+                owner_id = #{ownerId}
+            </if>
+            <if test="name != null">
+                AND name = #{name}
+            </if>
+            <if test="properties != null">
+                AND properties_json = #{properties, typeHandler = org.firespoon.fsbotserver.handler.CardPropertiesJsonTypeHandler}
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="itemColumnIf">
+        <trim prefixOverrides="AND">
+            <if test="item.ownerId != null">
+                owner_id = #{item.ownerId}
+            </if>
+            <if test="item.name != null">
+                AND name = #{item.name}
+            </if>
+            <if test="item.properties != null">
+                AND properties_json = #{item.properties, typeHandler = org.firespoon.fsbotserver.handler.CardPropertiesJsonTypeHandler}
+            </if>
+        </trim>
+    </sql>
+
+    <insert id="insert" parameterType="Card">
+        INSERT INTO
+        <include refid="tableName"/>
+        (<include refid="column"/>)
+        VALUES
+        (<include refid="columnValue"/>)
+    </insert>
+
+    <insert id="insertAll" parameterType="list">
+        INSERT INTO
+        <include refid="tableName"/>
+        (<include refid="column"/>)
+        VALUES
+        <foreach collection="list" item="item"
+                 separator=",">
+            (<include refid="itemColumnValue"/>)
+        </foreach>
+    </insert>
+
+    <delete id="delete" parameterType="Card">
+        DELETE FROM
+        <include refid="tableName"/>
+        <where>
+            <include refid="columnIf"/>
+        </where>
+    </delete>
+
+    <delete id="deleteAll" parameterType="list">
+        DELETE FROM
+        <include refid="tableName"/>
+        <where>
+            <foreach collection="list" item="item" separator="or">
+                <trim prefix="(" suffix=")">
+                    <include refid="itemColumnIf"/>
+                </trim>
+            </foreach>
+        </where>
+    </delete>
+
+    <insert id="update" parameterType="list">
+        REPLACE INTO
+        <include refid="tableName"/>
+        (
+        <include refid="column"/>
+        )
+        VALUES (<include refid="columnValue"/>)
+    </insert>
+
+    <insert id="updateAll" parameterType="list">
+        REPLACE INTO
+        <include refid="tableName"/>
+        (<include refid="column"/>)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (<include refid="itemColumnValue"/>)
+        </foreach>
+    </insert>
+
+    <select id="select" parameterType="Card" resultMap="cardResultMap">
+        SELECT * FROM
+        <include refid="tableName"/>
+        <where>
+            <include refid="columnIf"/>
+        </where>
+    </select>
+
+    <select id="selectAll" parameterType="list" resultMap="cardResultMap">
+        SELECT * FROM
+        <include refid="tableName"/>
+        <where>
+            <foreach collection="list" item="item" separator="or">
+                <trim prefix="(" suffix=")">
+                    <include refid="itemColumnIf"/>
+                </trim>
+            </foreach>
+        </where>
+    </select>
+</mapper>

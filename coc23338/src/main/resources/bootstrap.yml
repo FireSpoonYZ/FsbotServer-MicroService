@@ -1,0 +1,18 @@
+server:
+  port: 23338
+
+spring:
+  application:
+    name: coc
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        file-extension: yml
+        prefix: commonWithDB
+  profiles:
+    active: dev
+feign:
+  httpclient:
+    connection-timeout: 20000
+    time-to-live: 20000
